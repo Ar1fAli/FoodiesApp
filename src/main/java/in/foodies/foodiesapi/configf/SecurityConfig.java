@@ -53,7 +53,6 @@ public class SecurityConfig {
         return new CorsFilter(corsConfigurationSource());
     }
 
-    @Bean
     private UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(

@@ -3,6 +3,8 @@ package in.foodies.foodiesapi.service;
 import in.foodies.foodiesapi.entity.UserEntity;
 import in.foodies.foodiesapi.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,16 +14,73 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 
 @Service
-@AllArgsConstructor
-
 public class AppUserDetailsService implements UserDetailsService {
+
     private final UserRepository userRepository;
+
+    public AppUserDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+        System.out.println("UserRepository injected: " + (userRepository != null));
+    }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        return new User(user.getEmail(),user.getPassword(), Collections.emptyList());
-
+        return new User(user.getEmail(), user.getPassword(), Collections.emptyList());
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
+//@AllArgsConstructor
+//public class AppUserDetailsService implements UserDetailsService {
+//
+//    private final UserRepository userRepository;
+//
+//    public AppUserDetailsService(UserRepository userRepository) {
+//        this.userRepository = userRepository;
+//        System.out.println("UserRepository injected: " + (userRepository != null));
+//    }
+//
+//    @Override
+//    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+//        UserEntity user = userRepository.findByEmail(email)
+//                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+//        return new User(user.getEmail(), user.getPassword(), Collections.emptyList());
+//    }
+
+
+
+
+
+
+
+
+
+
+
+
+//    private final UserRepository userRepository;
+//
+//    @Override
+//    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+//        UserEntity user = userRepository.findByEmail(email)
+//                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+//        return new User(user.getEmail(),user.getPassword(), Collections.emptyList());
+//
+//    }
+

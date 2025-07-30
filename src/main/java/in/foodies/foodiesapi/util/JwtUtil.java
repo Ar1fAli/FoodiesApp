@@ -3,11 +3,12 @@ package in.foodies.foodiesapi.util;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.PostConstruct; // Make sure to import this
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,29 +21,26 @@ public class JwtUtil {
     @Value("${jwt.secret.key}")
     private String SECRET_KEY;
 
-    private Key signingKey; // Declare the key here
+    private Key signingKey;
 
-    // This method runs AFTER the SECRET_KEY has been injected by Spring
     @PostConstruct
     public void init() {
-        byte[] keyBytes = SECRET_KEY.getBytes();
+        byte[] keyBytes = SECRET_KEY.getBytes(StandardCharsets.UTF_8);
         this.signingKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        // You can add user roles to the claims here if needed
-        // claims.put("role", userDetails.getAuthorities());
         return createToken(claims, userDetails.getUsername());
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
-                .setClaims(claims) // Use setClaims instead of claims
-                .setSubject(subject) // Use setSubject instead of subject
-                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setClaims(claims)
+                .setSubject(subject)
+                .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours
-                .signWith(signingKey) // Corrected: Only pass the Key object
+                .signWith(signingKey)
                 .compact();
     }
 
@@ -60,8 +58,8 @@ public class JwtUtil {
     }
 
     private Claims extractAllClaims(String token) {
-        // Corrected: Use the modern parserBuilder and the Key object
-        return Jwts.parser()
+        return Jwts
+                .parser()
                 .setSigningKey(signingKey)
                 .build()
                 .parseClaimsJws(token)
